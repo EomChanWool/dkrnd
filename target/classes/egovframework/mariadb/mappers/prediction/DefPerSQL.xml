@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="apc.sl.prediction.defPer.service.impl.DefPerMapper">
+
+	<select id="selectDefPerToCnt" resultType="int">
+		SELECT COUNT(*) FROM MS_BAD_ALARM
+		WHERE 1=1
+		<if test="searchCondition != ''">
+			AND BA_WELDER_NO = #{searchCondition}
+		</if>
+		<if test="searchStDate != ''">
+			AND CAST(BA_DTTM AS DATE) >= #{searchStDate}
+		</if>
+		<if test="searchEdDate != ''">
+			AND CAST(BA_DTTM AS DATE) <![CDATA[<=]]>
+			#{searchEdDate}
+		</if>
+	</select>
+
+	<select id="selectBadList" resultType="egovMap">
+		SELECT ba_dttm, ba_welder_no, ba_dataamp, ba_datavolt, ba_datagas,
+		ba_datatime, ba_is_checked,
+		userid,ba_check_dt FROM MS_BAD_ALARM
+		WHERE 1=1
+		<if test="searchCondition != ''">
+			AND BA_WELDER_NO = #{searchCondition}
+		</if>
+		<if test="searchStDate != ''">
+			AND CAST(BA_DTTM AS DATE) >= #{searchStDate}
+		</if>
+		<if test="searchEdDate != ''">
+			AND CAST(BA_DTTM AS DATE) <![CDATA[<=]]>
+			#{searchEdDate}
+		</if>
+		ORDER BY ba_dttm
+		OFFSET (#{firstIndex}) ROWS
+		FETCH NEXT
+		#{recordCountPerPage} ROWS ONLY
+	</select>
+	
+	<select id="selectProdCnt" resultType="egovMap">
+	SELECT
+  (SELECT COUNT(*) FROM IF_WELDING WHERE WD_DT >= #{searchStDate} AND WD_DT <![CDATA[<=]]> #{searchEdDate} <if test="searchCondition != ''">
+			AND WELDER_NO = #{searchCondition}</if>) AS output_cnt,
+  COALESCE((SELECT SUM(NG_QTY) FROM MQCMBADDAT WHERE INSP_DAY >= #{searchStDate} AND INSP_DAY <![CDATA[<=]]>#{searchEdDate}), 0) AS defect_cnt
+
+	
+	</select>
+
+
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="apc.sl.facility.updown.service.impl.UpdownMapper">
+
+	<select id="selectUpdownListToCnt" resultType="int">
+		SELECT COUNT(*)
+		FROM MS_DATA_ULCL
+		WHERE 1=1
+		<if test="searchCondition != ''">
+			AND du_welder_no LIKE CONCAT ('%', #{searchCondition},
+			'%')
+		</if>
+		<if test="searchCondition2 != ''">
+			AND du_fcdt_type LIKE #{searchCondition2}
+		</if>
+		<if test="searchCondition3 != ''">
+			AND du_is_auto LIKE #{searchCondition3}
+		</if>
+	</select>
+
+	<select id="selectUpdownList" resultType="egovMap">
+		SELECT ROW_NUMBER() OVER( ORDER BY du_id ) AS r_num, du_welder_no,
+		du_fcdt_type, du_upper_val, du_lower_val,
+		du_is_auto,du_id from
+		MS_DATA_ULCL
+		where 1=1
+		<if test="searchCondition != ''">
+			AND du_welder_no LIKE CONCAT ('%', #{searchCondition},
+			'%')
+		</if>
+		<if test="searchCondition2 != ''">
+			AND du_fcdt_type LIKE #{searchCondition2}
+		</if>
+		<if test="searchCondition3 != ''">
+			AND du_is_auto LIKE #{searchCondition3}
+		</if>
+		ORDER BY du_id desc
+		OFFSET (#{firstIndex}) ROWS
+		FETCH NEXT
+		#{recordCountPerPage} ROWS ONLY
+
+	</select>
+
+	<select id="selcetUpdownInfo" resultType="egovMap">
+		SELECT du_id,
+		du_welder_no, du_fcdt_type, du_is_auto, du_upper_val,
+		du_lower_val
+		FROM
+		MS_DATA_ULCL
+		WHERE du_id = #{duId}
+	</select>
+
+	<select id="selectUpdownExist" resultType="int">
+		SELECT COUNT(*) FROM MS_DATA_ULCL
+		WHERE du_welder_no = #{duWelderNo}
+		and du_fcdt_type = #{duFcdtType}
+	</select>
+
+	<insert id="registUpdown">
+		INSERT INTO MS_DATA_ULCL
+		(du_welder_no,
+		du_fcdt_type,
+		du_is_auto,
+		du_upper_val,
+		du_lower_val,
+		du_auto_cl_num,
+		du_ins_id,
+		du_ins_dt
+		) values
+		(
+		#{duWelderNo},
+		#{duFcdtType},
+		#{duIsAuto},
+		#{duUpperVal},
+		#{duLowerVal},
+		0,
+		#{userId},
+		GETDATE())
+
+	</insert>
+
+	<update id="modifyUpdown">
+		UPDATE MS_DATA_ULCL SET
+		du_welder_no = #{duWelderNo},
+		du_fcdt_type = #{duFcdtType},
+		du_is_auto = #{duIsAuto},
+		du_upper_val =
+		#{duUpperVal},
+		du_lower_val = #{duLowerVal},
+		du_upd_id = #{userId},
+		du_upd_dt = GETDATE()
+		WHERE du_id = #{duId}
+	</update>
+
+	<delete id="deleteUpdown">
+		delete from MS_DATA_ULCL where du_id = #{duId}
+	</delete>
+
+</mapper>

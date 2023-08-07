@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="apc.sl.facility.electricCurrent.service.impl.ElectricCurrentMapper">
+
+	<select id="selectEc" resultType="egovMap">
+		select
+		DATAAMP, concat(WD_DT , ' ',WD_TM) as WD_DTTM
+		from IF_WELDING
+		where 1=1
+		<if test="searchCondition != ''">
+			AND welder_no = #{searchCondition}
+		</if>
+		<if test="searchStDate != ''">
+			and WD_DT>= #{searchStDate}
+		</if>
+		<if test="searchEdDate != ''">
+			and WD_DT <![CDATA[<=]]>
+			#{searchEdDate}
+		</if>
+		order by WD_DTTM desc
+	</select>
+
+	<select id="selectMiddle" resultType="egovMap">
+		WITH RankedData AS (
+		SELECT DATAAMP, ROW_NUMBER() OVER (ORDER BY
+		DATAAMP) AS RowNum, COUNT(*)
+		OVER () AS TotalCount
+		FROM (
+		SELECT DATAAMP,
+		concat(WD_DT , ' ',WD_TM) as WD_DTTM
+		FROM IF_WELDING
+		WHERE 1=1 AND WD_DT
+		>= #{searchStDate} AND WD_DT <![CDATA[<=]]>
+		#{searchEdDate}
+		AND welder_no = #{searchCondition}
+		) AS SubQuery
+		)
+		SELECT
+		AVG(DATAAMP) AS Median
+		FROM RankedData
+		WHERE RowNum IN ((TotalCount + 1)
+		/ 2, (TotalCount + 2) / 2)
+	</select>
+
+	<select id="selectVal" resultType="egovMap">
+		SELECT du_upper_val ,
+		du_lower_val FROM MS_DATA_ULCL
+		WHERE du_fcdt_type = 1
+		AND du_welder_no =
+		#{searchCondition}
+	</select>
+
+	<select id="selectGraphList" resultType="egovMap">
+		SELECT
+		WD_DT,
+		ROUND(AVG(DATAAMP), 2) AS avg_dataamp
+		FROM IF_WELDING
+		WHERE WD_DT >= #{searchStDate} AND WD_DT <![CDATA[<=]]> #{searchEdDate}
+		AND welder_no = #{searchCondition}
+		GROUP BY WD_DT
+		ORDER BY WD_DT
+
+	</select>
+
+</mapper>
