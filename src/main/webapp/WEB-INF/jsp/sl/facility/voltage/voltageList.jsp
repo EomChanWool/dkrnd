@@ -15,7 +15,7 @@
 	   	listForm.submit();
 	}
 	
-	function fn_search_electricCurrent(){
+	function fn_search_voltage(){
 		var date1 = $('#searchEdDate').val();
 		var date1_arr = date1.split("-");
 		var date2 = $('#searchStDate').val();
@@ -76,10 +76,10 @@
 	</script>
 	
 	<section>
-		<h1>전류 센서 현황</h1>
+		<h1>전압 센서 현황</h1>
 			<div class="btn_wrap">
 				<div class="search">
-					<form name ="listForm" class="listForm" action="${pageContext.request.contextPath}/sl/facility/electricCurrent/electricCurrentList.do" method="post">
+					<form name ="listForm" class="listForm" action="${pageContext.request.contextPath}/sl/facility/voltage/voltageList.do" method="post">
 						<input type="hidden" name="duId"/>
 						<select  class="btn btn-secondary dropdown-toggle searchCondition" name="searchCondition" id="searchCondition">
 							    		<option value="6" <c:if test="${searchVO.searchCondition eq 6}">selected="selected"</c:if>>PLASMA 1호기 좌</option>
@@ -92,7 +92,7 @@
 									<input class="btn btn-secondary searchDate" id="searchEdDate" name="searchEdDate" value="${searchVO.searchEdDate}" type="date">
 						
 					</form>
-			    <span class="btn_search" id="searchBtn" onclick="fn_search_electricCurrent()">검색</span>
+			    <span class="btn_search" id="searchBtn" onclick="fn_search_voltage()">검색</span>
 				</div>
 				
 			</div>
@@ -114,10 +114,10 @@
 				<tbody>
 					
 						<tr>
-							<td style="font-size: 25px;">${ecList2.ecAvg}</td>
-							<td style="font-size: 25px;">${ecList2.ecMid}</td>
-							<td style="font-size: 25px;">${ecList2.ecMax}</td>
-							<td style="font-size: 25px;">${ecList2.ecMin}</td>
+							<td style="font-size: 25px;">${vList2.vAvg}</td>
+							<td style="font-size: 25px;">${vList2.vMid}</td>
+							<td style="font-size: 25px;">${vList2.vMax}</td>
+							<td style="font-size: 25px;">${vList2.vMin}</td>
 							<td style="font-size: 25px;">${valList.duUpperVal}</td>
 							<td style="font-size: 25px;">${valList.duLowerVal}</td>
 						</tr>
@@ -135,7 +135,7 @@ var option;
 
 let date = [];
 
-let ecAvg = [];
+let vAvg = [];
 
 
 const dataMin = 0;
@@ -144,7 +144,7 @@ const dataInterval = 1000;
 
 <c:forEach items="${graphList}" var="list">
 	date.push('${list.wdDt}');
-	ecAvg.push('${list.avgDataamp}');
+	vAvg.push('${list.avgDatavolt}');
 </c:forEach>
 
 
@@ -204,7 +204,7 @@ option = {
 		          return value;
 		        }
 		      },
-		      data: ecAvg
+		      data: vAvg
 		    }
 		  ]
 		};
