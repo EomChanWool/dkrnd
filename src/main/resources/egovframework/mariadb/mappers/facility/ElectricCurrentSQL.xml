@@ -18,7 +18,7 @@
 			and WD_DT <![CDATA[<=]]>
 			#{searchEdDate}
 		</if>
-		order by WD_DTTM desc
+		order by WD_DT desc
 	</select>
 
 	<select id="selectMiddle" resultType="egovMap">
@@ -47,8 +47,11 @@
 		SELECT du_upper_val ,
 		du_lower_val FROM MS_DATA_ULCL
 		WHERE du_fcdt_type = 1
+		AND du_ins_dt >= #{searchStDate} AND du_ins_dt<![CDATA[<=]]>
+		#{searchEdDate}
 		AND du_welder_no =
 		#{searchCondition}
+		
 	</select>
 
 	<select id="selectGraphList" resultType="egovMap">
